@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="MedicalClinicSystem.API/MedicalClinicSystem.API.csproj" />
+  <Project Path="MedicalClinicSystem.Application/MedicalClinicSystem.Application/MedicalClinicSystem.Application.csproj" />
+  <Project Path="MedicalClinicSystem.Domain/MedicalClinicSystem.Domain/MedicalClinicSystem.Domain.csproj" />
+  <Project Path="MedicalClinicSystem.Infrastructure/MedicalClinicSystem.Infrastructure/MedicalClinicSystem.Infrastructure.csproj" />
+</Solution>

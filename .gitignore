@@ -1,0 +1,25 @@
+# Build outputs
+**/bin/
+**/obj/
+
+# Visual Studio / VS Code
+.vs/
+.vscode/
+
+# Local tooling used by this workspace
+.dotnet_cli/
+.tools/
+
+# OS files
+Thumbs.db
+Desktop.ini
+# Extra local files
+.dotnet/
+logs/
+*.user
+*.suo
+*.rsuser
+Debug/
+Release/
+.env
+.env.local

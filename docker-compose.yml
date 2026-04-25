@@ -1,0 +1,32 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: MedicalClinicSystemDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+    ports:
+      - "5432:5432"
+    volumes:
+      - mcs_pgdata:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=MedicalClinicSystemDb;Username=postgres;Password=123456
+      JwtSettings__Key: MedicalClinicSystemSuperSecretJwtKey123456789
+      JwtSettings__Issuer: MedicalClinicSystem
+      JwtSettings__Audience: MedicalClinicSystemUsers
+      JwtSettings__DurationInMinutes: "120"
+      JwtSettings__RefreshTokenDurationInDays: "7"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+volumes:
+  mcs_pgdata:
+

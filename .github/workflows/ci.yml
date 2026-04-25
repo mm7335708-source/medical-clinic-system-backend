@@ -1,0 +1,21 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build_test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Restore
+        run: dotnet restore MedicalClinicSystem.API/MedicalClinicSystem.API.csproj
+      - name: Build
+        run: dotnet build MedicalClinicSystem.API/MedicalClinicSystem.API.csproj -c Release --no-restore
+      - name: Test
+        run: dotnet test MedicalClinicSystem.Tests/MedicalClinicSystem.Tests.csproj -c Release --no-build
+
