@@ -50,6 +50,9 @@ namespace MedicalClinicSystem.Application.Services.Implementations
                 request.ClinicId);
 
             var entity = _mapper.Map<PatientVisit>(request);
+            entity.VisitDate = EnsureUtc(entity.VisitDate);
+            if (entity.FollowUpDate.HasValue)
+                entity.FollowUpDate = EnsureUtc(entity.FollowUpDate.Value);
 
             await _context.PatientVisits.AddAsync(entity);
 
@@ -94,13 +97,15 @@ namespace MedicalClinicSystem.Application.Services.Implementations
             entity.DoctorId = request.DoctorId;
             entity.ClinicId = request.ClinicId;
             entity.AppointmentId = request.AppointmentId;
-            entity.VisitDate = request.VisitDate;
+            entity.VisitDate = EnsureUtc(request.VisitDate);
             entity.ChiefComplaint = request.ChiefComplaint;
             entity.Diagnosis = request.Diagnosis;
             entity.TreatmentPlan = request.TreatmentPlan;
             entity.Prescription = request.Prescription;
             entity.Notes = request.Notes;
-            entity.FollowUpDate = request.FollowUpDate;
+            entity.FollowUpDate = request.FollowUpDate.HasValue
+                ? EnsureUtc(request.FollowUpDate.Value)
+                : null;
 
             if (appointment != null)
             {
@@ -158,8 +163,8 @@ namespace MedicalClinicSystem.Application.Services.Implementations
 
         public async Task<IEnumerable<PatientVisitResponseDto>> GetByDateRangeAsync(DateTime fromDate, DateTime toDate)
         {
-            var from = fromDate.Date;
-            var to = toDate.Date.AddDays(1).AddTicks(-1);
+            var from = DateTime.SpecifyKind(fromDate.Date, DateTimeKind.Utc);
+            var to = DateTime.SpecifyKind(toDate.Date.AddDays(1).AddTicks(-1), DateTimeKind.Utc);
 
             var visits = await BuildQuery()
                 .Where(x => x.VisitDate >= from && x.VisitDate <= to)
@@ -350,6 +355,16 @@ namespace MedicalClinicSystem.Application.Services.Implementations
                 throw new AppValidationException(new[] { "هذا الموعد مرتبط مسبقًا بسجل زيارة آخر." });
 
             return appointment;
+        }
+
+        private static DateTime EnsureUtc(DateTime value)
+        {
+            return value.Kind switch
+            {
+                DateTimeKind.Utc => value,
+                DateTimeKind.Local => value.ToUniversalTime(),
+                _ => DateTime.SpecifyKind(value, DateTimeKind.Utc)
+            };
         }
     }
 }

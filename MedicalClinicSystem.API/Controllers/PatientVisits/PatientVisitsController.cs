@@ -1,6 +1,7 @@
 using MedicalClinicSystem.API.Authorization;
 using MedicalClinicSystem.Application.DTOs.Common;
 using MedicalClinicSystem.Application.DTOs.PatientVisit;
+using MedicalClinicSystem.Application.Exceptions;
 using MedicalClinicSystem.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -86,9 +87,19 @@ namespace MedicalClinicSystem.API.Controllers.PatientVisits
         }
 
         [HttpGet("by-date")]
-        public async Task<IActionResult> GetByDateRange([FromQuery] DateTime fromDate, [FromQuery] DateTime toDate)
+        public async Task<IActionResult> GetByDateRange([FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate)
         {
-            var result = await _patientVisitService.GetByDateRangeAsync(fromDate, toDate);
+            if (!fromDate.HasValue || !toDate.HasValue)
+            {
+                throw new ValidationException(new[] { "يجب إدخال fromDate و toDate بصيغة صحيحة." });
+            }
+
+            if (fromDate.Value > toDate.Value)
+            {
+                throw new ValidationException(new[] { "يجب أن يكون fromDate أقل من أو يساوي toDate." });
+            }
+
+            var result = await _patientVisitService.GetByDateRangeAsync(fromDate.Value, toDate.Value);
             return Ok(result);
         }
 

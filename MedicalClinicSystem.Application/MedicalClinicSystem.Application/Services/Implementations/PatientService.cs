@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using FluentValidation;
 using MedicalClinicSystem.Application.DTOs.Common;
 using MedicalClinicSystem.Application.DTOs.Patient;
@@ -42,6 +42,11 @@ namespace MedicalClinicSystem.Application.Services.Implementations
 
             var patient = _mapper.Map<Patient>(dto);
 
+            if (patient.DateOfBirth.Kind == DateTimeKind.Unspecified)
+            {
+                patient.DateOfBirth = DateTime.SpecifyKind(patient.DateOfBirth, DateTimeKind.Utc);
+            }
+
             await _context.Patients.AddAsync(patient);
             await _context.SaveChangesAsync();
 
@@ -65,7 +70,7 @@ namespace MedicalClinicSystem.Application.Services.Implementations
 
             if (patient is null)
             {
-                throw new NotFoundException("المريض المطلوب غير موجود.");
+                throw new NotFoundException("?????? ??????? ??? ?????.");
             }
 
             return _mapper.Map<PatientResponseDto>(patient);
@@ -86,10 +91,14 @@ namespace MedicalClinicSystem.Application.Services.Implementations
 
             if (patient is null)
             {
-                throw new NotFoundException("المريض المطلوب غير موجود.");
+                throw new NotFoundException("?????? ??????? ??? ?????.");
             }
 
             _mapper.Map(dto, patient);
+            if (patient.DateOfBirth.Kind == DateTimeKind.Unspecified)
+            {
+                patient.DateOfBirth = DateTime.SpecifyKind(patient.DateOfBirth, DateTimeKind.Utc);
+            }
             patient.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
@@ -144,7 +153,7 @@ namespace MedicalClinicSystem.Application.Services.Implementations
 
             if (patient is null)
             {
-                throw new NotFoundException("المريض غير موجود بهذا الرقم.");
+                throw new NotFoundException("?????? ??? ????? ???? ?????.");
             }
 
             return _mapper.Map<PatientResponseDto>(patient);
@@ -184,7 +193,7 @@ namespace MedicalClinicSystem.Application.Services.Implementations
 
             if (patient is null)
             {
-                throw new NotFoundException("المريض المطلوب غير موجود.");
+                throw new NotFoundException("?????? ??????? ??? ?????.");
             }
 
             patient.IsDeleted = true;

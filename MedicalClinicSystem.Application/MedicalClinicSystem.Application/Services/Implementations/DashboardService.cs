@@ -23,10 +23,10 @@ namespace MedicalClinicSystem.Application.Services.Implementations
 
         public async Task<DashboardSummaryResponseDto> GetSummaryAsync()
         {
-            var today = DateTime.UtcNow.Date;
+            var today = DateTime.SpecifyKind(DateTime.UtcNow.Date, DateTimeKind.Utc);
             var tomorrow = today.AddDays(1);
-            var weekStart = today.AddDays(-(int)today.DayOfWeek);
-            var monthStart = new DateTime(today.Year, today.Month, 1);
+            var weekStart = DateTime.SpecifyKind(today.AddDays(-(int)today.DayOfWeek), DateTimeKind.Utc);
+            var monthStart = DateTime.SpecifyKind(new DateTime(today.Year, today.Month, 1), DateTimeKind.Utc);
 
             var totalClinics = await _context.Clinics.CountAsync(x => !x.IsDeleted);
             var totalDoctors = await _context.Doctors.CountAsync(x => !x.IsDeleted);
@@ -271,9 +271,9 @@ namespace MedicalClinicSystem.Application.Services.Implementations
 
         public async Task<DoctorVisitsSummaryResponseDto> GetDoctorVisitsSummaryAsync(Guid doctorId)
         {
-            var today = DateTime.UtcNow.Date;
-            var weekStart = today.AddDays(-(int)today.DayOfWeek);
-            var monthStart = new DateTime(today.Year, today.Month, 1);
+            var today = DateTime.SpecifyKind(DateTime.UtcNow.Date, DateTimeKind.Utc);
+            var weekStart = DateTime.SpecifyKind(today.AddDays(-(int)today.DayOfWeek), DateTimeKind.Utc);
+            var monthStart = DateTime.SpecifyKind(new DateTime(today.Year, today.Month, 1), DateTimeKind.Utc);
 
             var doctor = await _context.Doctors
                 .FirstOrDefaultAsync(x => x.Id == doctorId && !x.IsDeleted);
@@ -306,9 +306,9 @@ namespace MedicalClinicSystem.Application.Services.Implementations
 
         public async Task<ClinicVisitsSummaryResponseDto> GetClinicVisitsSummaryAsync(Guid clinicId)
         {
-            var today = DateTime.UtcNow.Date;
-            var weekStart = today.AddDays(-(int)today.DayOfWeek);
-            var monthStart = new DateTime(today.Year, today.Month, 1);
+            var today = DateTime.SpecifyKind(DateTime.UtcNow.Date, DateTimeKind.Utc);
+            var weekStart = DateTime.SpecifyKind(today.AddDays(-(int)today.DayOfWeek), DateTimeKind.Utc);
+            var monthStart = DateTime.SpecifyKind(new DateTime(today.Year, today.Month, 1), DateTimeKind.Utc);
 
             var clinic = await _context.Clinics
                 .FirstOrDefaultAsync(x => x.Id == clinicId && !x.IsDeleted);
@@ -341,9 +341,9 @@ namespace MedicalClinicSystem.Application.Services.Implementations
 
         public async Task<VisitsSummaryResponseDto> GetVisitsSummaryAsync()
         {
-            var today = DateTime.UtcNow.Date;
-            var weekStart = today.AddDays(-(int)today.DayOfWeek);
-            var monthStart = new DateTime(today.Year, today.Month, 1);
+            var today = DateTime.SpecifyKind(DateTime.UtcNow.Date, DateTimeKind.Utc);
+            var weekStart = DateTime.SpecifyKind(today.AddDays(-(int)today.DayOfWeek), DateTimeKind.Utc);
+            var monthStart = DateTime.SpecifyKind(new DateTime(today.Year, today.Month, 1), DateTimeKind.Utc);
 
             var totalVisits = await _context.PatientVisits.CountAsync();
 
@@ -367,7 +367,7 @@ namespace MedicalClinicSystem.Application.Services.Implementations
 
         public async Task<AppointmentsVsVisitsResponseDto> GetAppointmentsVsVisitsAsync()
         {
-            var today = DateTime.UtcNow.Date;
+            var today = DateTime.SpecifyKind(DateTime.UtcNow.Date, DateTimeKind.Utc);
 
             var totalAppointments = await _context.Appointments
                 .CountAsync(x => !x.IsDeleted);

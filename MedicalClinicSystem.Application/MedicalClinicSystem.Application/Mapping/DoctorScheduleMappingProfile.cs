@@ -22,5 +22,5 @@ namespace MedicalClinicSystem.Application.Mapping
                 .ForMember(dest => dest.DayOfWeek,
                     opt => opt.MapFrom(src => (int)src.DayOfWeek));
         }
-    } h
+    } 
 }

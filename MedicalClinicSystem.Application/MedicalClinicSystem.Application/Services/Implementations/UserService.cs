@@ -86,7 +86,7 @@ namespace MedicalClinicSystem.Application.Services.Implementations
                 throw new NotFoundException("المستخدم غير موجود.");
             }
 
-            await EnsureNotDemotingLastAdminAsync(user.RoleId, request.RoleId);
+            await EnsureNotDemotingLastAdminAsync(user.RoleId, request.RoleId, user.IsActive);
             await EnsureRoleExistsAsync(request.RoleId);
             await EnsureDoctorLinkIsValidAsync(request.RoleId, request.DoctorId);
             await EnsureUserNameIsUniqueAsync(request.UserName, id);
@@ -220,7 +220,7 @@ namespace MedicalClinicSystem.Application.Services.Implementations
                 throw new NotFoundException("المستخدم غير موجود.");
             }
 
-            await EnsureNotDeletingLastAdminAsync(user.RoleId);
+            await EnsureNotDeletingLastAdminAsync(user.RoleId, user.IsActive);
 
             user.IsDeleted = true;
             user.IsActive = false;
@@ -426,10 +426,15 @@ namespace MedicalClinicSystem.Application.Services.Implementations
             }
         }
 
-        private async Task EnsureNotDeletingLastAdminAsync(Guid userRoleId)
+        private async Task EnsureNotDeletingLastAdminAsync(Guid userRoleId, bool userIsActive)
         {
             var adminRoleId = await GetAdminRoleIdAsync();
             if (adminRoleId == Guid.Empty || userRoleId != adminRoleId)
+            {
+                return;
+            }
+
+            if (!userIsActive)
             {
                 return;
             }
@@ -443,7 +448,7 @@ namespace MedicalClinicSystem.Application.Services.Implementations
             }
         }
 
-        private async Task EnsureNotDemotingLastAdminAsync(Guid currentRoleId, Guid newRoleId)
+        private async Task EnsureNotDemotingLastAdminAsync(Guid currentRoleId, Guid newRoleId, bool userIsActive)
         {
             var adminRoleId = await GetAdminRoleIdAsync();
             if (adminRoleId == Guid.Empty)
@@ -455,6 +460,11 @@ namespace MedicalClinicSystem.Application.Services.Implementations
             var willStayAdmin = newRoleId == adminRoleId;
 
             if (!isCurrentlyAdmin || willStayAdmin)
+            {
+                return;
+            }
+
+            if (!userIsActive)
             {
                 return;
             }
